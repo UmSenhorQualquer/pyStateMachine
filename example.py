@@ -92,5 +92,5 @@ class StatesVariables(object):
 	def __init__(self): self._passedA = False; self._passedB = False
 
 #controller = StatesController([InitialState(), AState(), BState(), CState()], sharedVar=StatesVariables() )
-controller = StatesControllerDebug([InitialState(), AState(), BState(), CState()], sharedVar=StatesVariables() )
+controller = StatesControllerDebug([InitialState(), AState(), BState(), CState()], sharedVar=StatesVariables(), size=(800,600) )
 while not controller.ended:  controller.iterateStates()

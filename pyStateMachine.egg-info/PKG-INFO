@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: pyStateMachine
+Version: 1.0
+Summary: pyStateMachine is a Python 2.7 framework to implement and visualise state machines.
+Home-page: https://github.com/UmSenhorQualquer/pyStateMachine
+Author: Ricardo Ribeiro
+Author-email: ricardojvr@gmail.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
