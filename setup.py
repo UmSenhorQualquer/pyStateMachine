@@ -30,7 +30,6 @@ setup(
 		'pyStateMachine.States'],
 	
 	install_requires=[
-		"pydot",
-		"cv2",
+		"pydot"		
 	],
 )

@@ -74,7 +74,7 @@ class CState(State):
 		"""
 		Check if is True
 		"""
-		return True
+		return False
 
 
 

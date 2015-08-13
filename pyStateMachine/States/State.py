@@ -27,7 +27,7 @@ def goto(true=None, false=None):
 
 class State(object):
 
-	def __init__(self): self.shared = None
+	def __init__(self, *args, **kargs): self.shared = None
 
 	def run(self, input=None):
 		print "Run State", self.__class__.__name__

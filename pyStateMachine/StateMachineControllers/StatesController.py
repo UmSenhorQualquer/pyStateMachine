@@ -10,7 +10,7 @@ __email__       = "ricardojvr@gmail.com"
 __status__      = "Production"
 
 from pyStateMachine.States.State import EndState
-
+import pydot
 
 class StatesController(object):
 
@@ -28,6 +28,65 @@ class StatesController(object):
 		self._waitingStates = [ (None, initialState, None) ] 
 		
 
+	def exportGraph(self, filename='stateMachine.png'):
+		currentStates = self.currentStates
+		currentEdges  = self.currentEdges
+
+		# this time, in graph_type we specify we want a DIrected GRAPH
+		graph = pydot.Dot(graph_type='digraph', fontname='Verdana', ratio='1')
+
+		nodes = {}
+		# Draw the nodes
+		for nodeName, state in self._states.items():
+			
+			attrs = {'shape':'circle', 'margin': '0.02px'}
+
+			#If is drawing the EndNode
+			if state.__class__.__name__=='EndState': attrs.update({'shape':'point', 'width':'0.2', 'peripheries':'0.2'})
+			#If is drawing the first Node, add the Initial Node
+			if state==self._initial: startNode = pydot.Node('Start', shape='point', width='0.2' ); graph.add_node(startNode)
+			#If the node will be the next to be precessed
+			if state in currentStates: attrs.update({'style':'filled'})
+
+			node 			= pydot.Node( nodeName, **attrs ); graph.add_node(node)
+			nodes[nodeName] = [state, node]
+
+			#If is drawing the first Node, add an edge from the InitalNode to the first Node.
+			if state == self._initial: graph.add_edge( pydot.Edge(startNode, node, **({'penwidth':'3px'} if (None, state) in currentEdges else {}) ) )
+
+		#Draw edges
+		endNode = nodes['EndState']
+		for state0, node0 in nodes.values():
+			#For each Node draw the events edges
+			for e in state0.events:
+
+				label = "{0}==True".format(e.label)
+				extraComment = self.eventExtraComment(e, True)
+				if extraComment: label +='\n' + extraComment
+
+				#Draw the edge when the event result is True
+				state1, node1 = nodes[e.go2StateTrue] if e.go2StateTrue!=None else endNode
+				attrs = { 'label':label, 'fontsize':'10px' }
+				if (state0, state1) in currentEdges: attrs['penwidth']='3px'
+				edge = pydot.Edge(node0, node1, **attrs ); graph.add_edge( edge )
+
+				if e.go2StateFalse!=None:
+
+					label = "{0}==False".format(e.label)
+					extraComment = self.eventExtraComment(e, False)
+					if extraComment: label +='\n' + extraComment
+
+					#Draw the edge when the event result is False
+					state1, node1 = nodes[e.go2StateFalse] if e.go2StateFalse!=None else endNode
+					attrs = { 'label':label, 'fontsize':'10px' }
+					if (state0, state1) in currentEdges: attrs['penwidth']='3px'
+					edge = pydot.Edge(node0, node1, **attrs ); graph.add_edge( edge )
+	
+			
+		#Save and show the generated image
+		graph.write_png(filename)
+		
+	def eventExtraComment(self, e, result): return None
 
 		
 	def iterateStates(self):
@@ -61,7 +120,10 @@ class StatesController(object):
 		else:
 			print "State machine ended"
 
-		#print self.currentStatesNames
+
+	@property
+	def states(self): return self._states
+	
 		
 	@property 
 	def currentStatesNames(self): return [toState for fromState, toState, stateOutput in self._waitingStates]
